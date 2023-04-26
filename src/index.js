@@ -76,7 +76,7 @@ client.on('messageCreate', async msg => {
     }
 
     // Clean Chat
-    /*if (msg.content.startsWith('!cleanchat')) {
+    if (msg.content == ('!cleanchat')) {
         try {
             // Fetch messages in the channel
             const messages = await msg.channel.messages.fetch();
@@ -89,7 +89,7 @@ client.on('messageCreate', async msg => {
             console.error(err);
             msg.reply('Error while attempting to clean the chat. Please try again later.');
         }
-    }*/
+    }
     
     //Add Win Meme
     if (msg.content.startsWith('!win')) {
