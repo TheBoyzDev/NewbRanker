@@ -1,0 +1,2 @@
+# NewbRanker
+Discord BOT
