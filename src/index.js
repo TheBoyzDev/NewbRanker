@@ -75,8 +75,8 @@ client.on('messageCreate', async msg => {
         await handleValLeaderboard(msg);
     }
 
-    // Clean Chat
-    if (msg.content == ('!cleanchat')) {
+    // Message == !cleanchat
+    if (msg.content === '!cleanchat') {
         try {
             // Fetch messages in the channel
             const messages = await msg.channel.messages.fetch();
