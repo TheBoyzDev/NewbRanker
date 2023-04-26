@@ -26,8 +26,7 @@ async function handleValLeaderboard(msg) {
         const channel = msg.guild.channels.cache.find(ch => ch.name === 'newb-ranking');
 
         if (channel) {
-            const sentMessage = await channel.send({ embeds: [leaderboardEmbed] });
-            await sentMessage.pin();
+            await channel.send({ embeds: [leaderboardEmbed] });
         } else {
             msg.reply('Cannot find the "newb-ranking" channel. Please create one.');
         }
