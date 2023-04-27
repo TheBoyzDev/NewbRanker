@@ -25,6 +25,13 @@ async function handleValLeaderboard(msg) {
 
         const channel = msg.guild.channels.cache.find(ch => ch.name === 'newb-ranking');
 
+        // Delete all existing leaderboard messages in the channel
+        const messages = await channel.messages.fetch();
+        const leaderboardMessages = messages.filter(m => m.author.id === channel.client.user.id && m.embeds[0] && m.embeds[0].title === 'Valorant Leaderboard');
+        await Promise.all(leaderboardMessages.map(m => m.delete()));
+
+
+        // Send the new leaderboard message
         if (channel) {
             await channel.send({ embeds: [leaderboardEmbed] });
         } else {
