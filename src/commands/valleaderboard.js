@@ -43,8 +43,25 @@ async function handleValLeaderboard(msg) {
     }
 }
 
+// Get the corresponding emoji for the player's rank
 function getRankEmojiName(playerRank) {
     const rankMapping = {
+        'Iron 1': 'rank_iro1',
+        'Iron 2': 'rank_iro2',
+        'Iron 3': 'rank_iro3',
+        'Bronze 1': 'rank_bro1',
+        'Bronze 2': 'rank_bro2',
+        'Bronze 3': 'rank_bro3',
+        'Silver 1': 'rank_sil1',
+        'Silver 2': 'rank_sil2',
+        'Silver 3': 'rank_sil3',
+        'Gold 1': 'rank_gol1',
+        'Gold 2': 'rank_gol2',
+        'Gold 3': 'rank_gol3',
+        'Platinum 1': 'rank_pla1',
+        'Platinum 2': 'rank_pla2',
+        'Platinum 3': 'rank_pla3',
+        'Diamond 1': 'rank_dia1',
         'Diamond 2': 'rank_dia2',
         'Diamond 3': 'rank_dia3',
         'Ascendant 1': 'rank_asc1',
@@ -52,7 +69,8 @@ function getRankEmojiName(playerRank) {
         'Ascendant 3': 'rank_asc3',
         'Immortal 1': 'rank_im1',
         'Immortal 2': 'rank_im2',
-        // Add more ranks here if necessary
+        'Immortal 3': 'rank_im3',
+        'Radiant': 'rank_rad'
     };
 
     return rankMapping[playerRank] || '';
