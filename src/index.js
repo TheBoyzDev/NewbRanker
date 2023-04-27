@@ -22,6 +22,8 @@ const connectDB = require('./db'); // Import connectDB
 // Connect to MongoDB
 connectDB();
 
+const leaderboardUpdateSchedule = '0 */4 * * *'; // Run every 4 hours at 0 minutes
+
 // Create a new Discord client
 const client = new Client({ 
     intents: [
@@ -72,7 +74,7 @@ client.on('messageCreate', async msg => {
 
     //Val Leaderboard
     if (msg.content.startsWith('!valleaderboard')) {
-        await handleValLeaderboard(msg);
+        await handleValLeaderboard();
     }
 
     // Message == !cleanchat
@@ -136,6 +138,11 @@ schedule.scheduleJob('* * * * *', async () => {
             await ValorantPlayer.findByIdAndUpdate(player._id, { val_lastGameID: lastGame.meta.id });
         }
     }
+});
+
+// Schedule the job to run every 4 hours
+schedule.scheduleJob(leaderboardUpdateSchedule, async () => {
+    await handleValLeaderboard();
 });
 
 
