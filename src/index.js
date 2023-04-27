@@ -74,7 +74,7 @@ client.on('messageCreate', async msg => {
 
     //Val Leaderboard
     if (msg.content.startsWith('!valleaderboard')) {
-        await handleValLeaderboard();
+        await handleValLeaderboard(msg);
     }
 
     // Message == !cleanchat
