@@ -6,9 +6,8 @@ const schedule = require('node-schedule');
 const { handleValStats, updatePlayersInfo } = require('./commands/valstats');
 const { handleValRegister } = require('./commands/valregister');
 const { handleValLeaderboard } = require('./commands/valleaderboard');
-const { parsePlayerNameAndTag } = require('./utils/helpers');
-const { getLastGameInfo } = require('./utils/api');
-const { sendGameUpdate } = require('./utils/embeds');
+const { parsePlayerNameAndTag, groupPlayersByMatch, getRankEmojiName } = require('./utils/helpers');
+const { singlePlayerGameUpdate, oneVsOneGameUpdate ,sameTeamGameUpdate, differentTeamsGameUpdate } = require('./utils/embeds');
 
 const { handleAddWinMeme } = require('./commands/addWinMeme');
 const { handleAddLostMeme } = require('./commands/addLostMeme');
@@ -74,7 +73,15 @@ client.on('messageCreate', async msg => {
 
     //Val Leaderboard
     if (msg.content.startsWith('!valleaderboard')) {
-        await handleValLeaderboard(msg);
+        const result = await handleValLeaderboard(msg);
+        
+        // If result is Embed, send it
+        if (result && result.embed) {
+            msg.channel.send({ embeds: [result.embed] });
+        }else{
+            msg.reply(result);
+        }
+
     }
 
     // Message == !cleanchat
@@ -107,44 +114,117 @@ client.on('messageCreate', async msg => {
 
 // Schedule the job to run every minute
 schedule.scheduleJob('* * * * *', async () => {
-
-    //Update players info
+    // Update players info
     updatePlayersInfo();
 
+    let newMatchFound = false;
     const players = await ValorantPlayer.find();
+    const { matchGroups, playerStatsArray } = await groupPlayersByMatch(players);
+
     const channel = client.channels.cache.find((ch) => ch.name === 'rank-status');
 
-    for (const player of players) {
-        const lastGameInfo = await getLastGameInfo(player.val_puuid);
+    for (const matchID in matchGroups) {
+        const group = matchGroups[matchID];
+        const lastGame = group.lastGame;
+        const teamResults = {};
 
-        if (lastGameInfo.status === 'error') {
-            console.error(lastGameInfo.message);
-            continue;
+        for (const player of group.players) {
+            if (player.val_lastGameID !== matchID) {
+                newMatchFound = true;
+
+                const playerTeam = lastGame.stats.team;
+                teamResults[playerTeam] = teamResults[playerTeam] || { players: [], score: lastGame.teams[playerTeam.toLowerCase()] };
+                teamResults[playerTeam].players.push(player);
+
+                await ValorantPlayer.findByIdAndUpdate(player._id, { val_lastGameID: matchID });
+            }
         }
 
-        const lastGame = lastGameInfo.data.data[0];
+        const teams = Object.keys(teamResults);
+        const messageType = getMessageType(teamResults);
 
-        if (player.val_lastGameID !== lastGame.meta.id) {
-            const playerTeam = lastGame.stats.team;
-            const playerTeamScore = lastGame.teams[playerTeam.toLowerCase()];
-            const opponentTeamScore = lastGame.teams[playerTeam.toLowerCase() === 'blue' ? 'red' : 'blue'];
-            const isWinning = playerTeamScore > opponentTeamScore;
+        // Check if there is 1 or 2 teams
+        if (teams.length === 1) {
+            // Check if the team is winning
+            const isWinning = teamResults[teams[0]].score > lastGame.teams[teams[0].toLowerCase() === 'blue' ? 'red' : 'blue'];
 
-            // Get the game update embed message
-            const gameUpdateEmbed = await sendGameUpdate(player, isWinning);
-            // Send the embed message to the channel
-            await channel.send({ embeds: [gameUpdateEmbed] });
+            // Check if there is one player or more in the team
+            if (teamResults[teams[0]].players.length === 1) {
+                const player = teamResults[teams[0]].players[0];
 
-            await ValorantPlayer.findByIdAndUpdate(player._id, { val_lastGameID: lastGame.meta.id });
-        }
+                const gameUpdateEmbed = await singlePlayerGameUpdate(player, playerStatsArray, isWinning);
+
+                // Send the embed message if there's a new match
+                if (newMatchFound && gameUpdateEmbed) {
+                    await channel.send({ embeds: [gameUpdateEmbed] });
+                }
+            } else {
+                const gameUpdateEmbed = await sameTeamGameUpdate(teamResults[teams[0]].players, playerStatsArray, isWinning);
+
+                // Send the embed message if there's a new match
+                if (newMatchFound && gameUpdateEmbed) {
+                    await channel.send({ embeds: [gameUpdateEmbed] });
+                }
+            }
+        } else if (teams.length === 2) {
+            // Check if oneVsOne or groupDifferentTeams
+            if (messageType === 'oneVsOne') {
+                // Get winning and loser players
+                const winningPlayer = teamResults[teams[0]].score > teamResults[teams[1]].score ? teamResults[teams[0]].players[0] : teamResults[teams[1]].players[0];
+                const losingPlayer = teamResults[teams[0]].score < teamResults[teams[1]].score ? teamResults[teams[0]].players[0] : teamResults[teams[1]].players[0];
+                
+                const gameUpdateEmbed = await oneVsOneGameUpdate(winningPlayer, losingPlayer, playerStatsArray);
+
+                // Send the embed message if there's a new match
+                if (newMatchFound && gameUpdateEmbed) {
+                    await channel.send({ embeds: [gameUpdateEmbed] });
+                }
+            } else if (messageType === 'groupDifferentTeams') {
+                // Get winning and loser players
+                const winningPlayers = teamResults[teams[0]].score > teamResults[teams[1]].score ? teamResults[teams[0]].players : teamResults[teams[1]].players;
+                const losingPlayers = teamResults[teams[0]].score < teamResults[teams[1]].score ? teamResults[teams[0]].players : teamResults[teams[1]].players;
+
+                const gameUpdateEmbed = await differentTeamsGameUpdate(winningPlayers, losingPlayers, playerStatsArray);
+
+                // Send the embed message if there's a new match
+                if (newMatchFound && gameUpdateEmbed) {
+                    await channel.send({ embeds: [gameUpdateEmbed] });
+                }
+            }
+        }   
     }
 });
 
+
+
 // Schedule the job to run every 4 hours
 schedule.scheduleJob(leaderboardUpdateSchedule, async () => {
-    await handleValLeaderboard();
+    try {
+        const result = await handleValLeaderboard();
+
+        const channel = client.channels.cache.find(ch => ch.name === 'newb-ranking');
+        await channel.send({ embeds: [result] });
+        
+    } catch (error) {
+        console.error(`Error generating the leaderboard: ${error.message}`);
+    }
 });
 
-
+function getMessageType(teamResults) {
+    const teams = Object.keys(teamResults);
+    if (teams.length === 1) {
+        if (teamResults[teams[0]].players.length === 1) {
+            return 'alone';
+        } else {
+            return 'groupSameTeam';
+        }
+    } else if (teamResults[teams[0]] && teamResults[teams[1]]) {
+        if (teamResults[teams[0]].players.length === 1 && teamResults[teams[1]].players.length === 1) {
+            return 'oneVsOne';
+        } else {
+            return 'groupDifferentTeams';
+        }
+    }
+}
 
 client.login(process.env.DISCORD_BOT_TOKEN);
