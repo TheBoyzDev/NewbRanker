@@ -50,6 +50,17 @@ async function sameTeamGameUpdate(players, allPlayerStats, isWinning) {
         .setTitle(`${players.map(p => p.val_name).join(', ')} ${isWinning ? 'just WON' : 'just LOST'} their last game as a team!`)
         .setImage(meme.URL);
 
+    // Order allPlayerStats by highest combat score to lowest   
+    allPlayerStats.sort((a, b) => b.stats.score - a.stats.score);
+
+    // Order players by the order of allPlayerStats
+    players.sort((a, b) => {
+        const aStats = allPlayerStats.find(stats => stats.playerName.trim() === a.val_name.trim());
+        const bStats = allPlayerStats.find(stats => stats.playerName.trim() === b.val_name.trim());
+
+        return bStats.stats.score - aStats.stats.score;
+    });
+
     players.forEach(player => {
         const playerStats = allPlayerStats.find(stats => stats.playerName.trim() === player.val_name.trim());
 
