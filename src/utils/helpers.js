@@ -1,7 +1,7 @@
 const { getLastGameInfo } = require('./api');
 const Memes = require('../models/Memes');
 
-function parsePlayerNameAndTag(messageContent) {
+function ParsePlayerNameAndTag(messageContent) {
     const args = messageContent.split("#");
     const playerName = args[0];
     const playerTag = args[1];
@@ -52,7 +52,7 @@ async function getRandomMeme(isWinning) {
 }
 
 // Get the corresponding emoji for the player's rank
-function getRankEmojiName(playerRank) {
+function GetRankEmojiName(playerRank) {
     const rankMapping = {
         'Iron 1': 'rank_iro1',
         'Iron 2': 'rank_iro2',
@@ -86,8 +86,8 @@ function getRankEmojiName(playerRank) {
 
 
 module.exports = {
-    parsePlayerNameAndTag,
+    ParsePlayerNameAndTag,
     groupPlayersByMatch,
     getRandomMeme,
-    getRankEmojiName
+    GetRankEmojiName
 };
