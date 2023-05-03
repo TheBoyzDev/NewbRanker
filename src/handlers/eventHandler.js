@@ -10,12 +10,26 @@ module.exports = (client) => {
 
     const eventName = eventFolder.replace(/\\/g, '/').split('/').pop();
 
-    client.on(eventName, async (arg) => {
-      for (const eventFile of eventFiles) {
-        const eventFunction = require(eventFile);
-        console.log(`Loading event file: ${eventFile}`);
-        await eventFunction(client, arg);
+    if (eventName === 'scheduleTasks') {
+      const scheduleTaskFolders = getAllFiles(eventFolder, true);
+      for (const taskFolder of scheduleTaskFolders) {
+        const taskFiles = getAllFiles(taskFolder);
+        taskFiles.sort();
+        for (const taskFile of taskFiles) {
+          const taskFunction = require(taskFile);
+          console.log(`Loading scheduled task file: ${taskFile}`);
+          taskFunction(client);
+        }
       }
-    });
+    } else {
+      // Handle events
+      client.on(eventName, async (arg) => {
+        for (const eventFile of eventFiles) {
+          const eventFunction = require(eventFile);
+          console.log(`Loading event file: ${eventFile}`);
+          await eventFunction(client, arg);
+        }
+      });
+    }
   }
 };

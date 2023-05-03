@@ -19,7 +19,7 @@ const {
       }
   
       // Get the guild and the channel to send the message
-      guild = await client.guilds.fetch(interaction.guildId);
+      guild = client.guilds.cache.first();
       channel = guild.channels.cache.find(channel => channel.name === 'newb-ranking');
   
       // Validate if the command was executed in the correct channel
@@ -37,10 +37,14 @@ const {
       // Send the embed
       channel.send({ embeds: [embed] });
   
+      // Send a response to the interaction if it exists
+      if (interaction) await interaction.editReply('Valorant leaderboard updated.');
+  
     } catch (error) {
       console.log(error);
     }
   };
+  
   
   module.exports = {
     callback: UpdateLeaderboard,
