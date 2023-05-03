@@ -1,19 +1,19 @@
 const axios = require('axios');
 
 // Fetch account data from the API
-async function fetchAccountData(playerName, playerTag) {
+async function FetchAccountData(playerName, playerTag) {
     const response = await axios.get(`https://api.henrikdev.xyz/valorant/v1/account/${playerName}/${playerTag}`);
     return response.data;
 }
 
 // Fetch rank data from the API
-async function fetchRankData(region, puuid) {
+async function FetchRankData(region, puuid) {
     const response = await axios.get(`https://api.henrikdev.xyz/valorant/v1/by-puuid/mmr/${region}/${puuid}`);
     return response.data;
 }
 
 // Fetch last game info from the API
-async function getLastGameInfo(puuid) {
+async function GetLastGameInfo(puuid) {
     const url = `https://api.henrikdev.xyz/valorant/v1/by-puuid/lifetime/matches/eu/${puuid}?mode=competitive&page=1&size=1`;
 
     try {
@@ -40,8 +40,8 @@ async function getLastGameInfo(puuid) {
 }
 
 module.exports = {
-    fetchAccountData,
-    fetchRankData,
-    getLastGameInfo
+    FetchAccountData,
+    FetchRankData,
+    GetLastGameInfo
 };
 

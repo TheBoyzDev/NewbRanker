@@ -1,7 +1,7 @@
 const { EmbedBuilder } = require('discord.js');
 const { getRandomMeme, getRankEmojiName } = require('./helpers');
 
-function valStatsEmbed(playerName, playerTag, playerRank, playerCardURL, rankImageURL) {
+function ValStatsEmbed(playerName, playerTag, playerRank, playerCardURL, rankImageURL) {
     const embed = new EmbedBuilder()
         .setTitle(`${playerName}#${playerTag} Valorant Stats`)
         .addFields([
@@ -159,7 +159,7 @@ async function oneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats) {
 
 
 module.exports = {
-    valStatsEmbed,
+    ValStatsEmbed,
     singlePlayerGameUpdate,
     sameTeamGameUpdate,
     differentTeamsGameUpdate,
