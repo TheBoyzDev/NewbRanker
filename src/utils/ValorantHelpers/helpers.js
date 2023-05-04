@@ -1,5 +1,5 @@
-const { getLastGameInfo } = require('./api');
-const Memes = require('../models/Memes');
+const { GetLastGameInfo } = require('../api');
+const Memes = require('../../models/Memes');
 
 function ParsePlayerNameAndTag(messageContent) {
     const args = messageContent.split("#");
@@ -9,12 +9,12 @@ function ParsePlayerNameAndTag(messageContent) {
     return { playerName, playerTag };
 }
 
-async function groupPlayersByMatch(players) {
+async function GroupPlayersByMatch(players) {
     const matchGroups = {};
     const playerStatsArray = [];
 
     for (const player of players) {
-        const lastGameInfo = await getLastGameInfo(player.val_puuid);
+        const lastGameInfo = await GetLastGameInfo(player.val_puuid);
 
         if (lastGameInfo.status === 'error') {
             console.error(lastGameInfo.message);
@@ -42,7 +42,7 @@ async function groupPlayersByMatch(players) {
 }
 
 //Get Random Meme
-async function getRandomMeme(isWinning) {
+async function GetRandomMeme(isWinning) {
     //get the number of memes in the database
     const memesCount = await Memes.countDocuments({ isWinning });
     //generate a random number between 0 and the number of memes in the database
@@ -87,7 +87,7 @@ function GetRankEmojiName(playerRank) {
 
 module.exports = {
     ParsePlayerNameAndTag,
-    groupPlayersByMatch,
-    getRandomMeme,
+    GroupPlayersByMatch,
+    GetRandomMeme,
     GetRankEmojiName
 };

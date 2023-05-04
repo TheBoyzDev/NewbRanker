@@ -1,5 +1,5 @@
 const { EmbedBuilder } = require('discord.js');
-const { GetRankEmojiName } = require('../helpers');
+const { GetRankEmojiName } = require('../ValorantHelpers/helpers');
 
 const ValorantPlayer = require('../../models/ValorantPlayer');
 

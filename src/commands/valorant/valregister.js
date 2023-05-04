@@ -4,7 +4,6 @@ const {
   } = require('discord.js');
 
 const { FetchAccountData, FetchRankData, GetLastGameInfo} = require('../../utils/api');
-const { ParsePlayerNameAndTag } = require('../../utils/helpers');
 
 const ValorantPlayer = require('../../models/ValorantPlayer')
 
