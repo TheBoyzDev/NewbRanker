@@ -4,7 +4,7 @@ const { GetRandomMeme } = require('../ValorantHelpers/helpers');
 
 const ValorantPlayer = require('../../models/ValorantPlayer');
 
-async function OneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats) {
+async function OneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats, isDraw) {
     const winningMeme = await getRandomMeme(true);
     const losingMeme = await getRandomMeme(false);
 
@@ -32,15 +32,16 @@ async function OneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats) {
     }
 
     const embed = new EmbedBuilder()
-        .setColor('#28a745')
-        .setTitle(`${winningPlayer.val_name} beat the shit out of ${losingPlayer.val_name} in their last game!`)
-        .addField('Winning team meme', '\u200b')
-        .setImage(winningMeme.URL);
+        .setColor(isDraw ? '#ffe659' : '#28a745')
+        .setTitle(isDraw ? `${winningPlayer.val_name} drew against ${losingPlayer.val_name} in their last game!`
+                         : `${winningPlayer.val_name} beat the shit out of ${losingPlayer.val_name} in their last game!`)
+        //.addField('Winning team meme', '\u200b')
+        .setImage(isDraw ? losingMeme.URL : winningMeme.URL);
 
     addPlayerStats(embed, winningPlayer, 'Winner');
 
-    embed.addField('Losing team meme', '\u200b')
-         .setImage(losingMeme.URL);
+    //embed.addField('Losing team meme', '\u200b')
+    //    .setImage(losingMeme.URL);
 
     addPlayerStats(embed, losingPlayer, 'Loser');
 
@@ -49,7 +50,7 @@ async function OneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats) {
     return embed;
 }
 
-async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning) {
+async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw) {
     const meme = await GetRandomMeme(isWinning);
 
     // Find the specific player's stats in the array
@@ -71,8 +72,8 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning) {
 
     // Use playerStats.stats to access the player's statistics
     const embed = new EmbedBuilder()
-        .setColor(isWinning ? '#28a745' : '#dc3545')
-        .setTitle(`${player.val_name} ${isWinning ? 'just WON' : 'just LOST'} their last game!`)
+        .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
+        .setTitle(`${player.val_name} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} their last game!`)
         .addFields(
             { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
             { name: '\u200b', value: '\u200b', inline: false},
@@ -86,12 +87,12 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning) {
     return embed;
 }
 
-async function SameTeamGameUpdate(players, allPlayerStats, isWinning) {
+async function SameTeamGameUpdate(players, allPlayerStats, isWinning, isDraw) {
     const meme = await GetRandomMeme(isWinning);
 
     const embed = new EmbedBuilder()
-        .setColor(isWinning ? '#28a745' : '#dc3545')
-        .setTitle(`${players.map(p => p.val_name).join(', ')} ${isWinning ? 'just WON' : 'just LOST'} their last game as a team!`)
+        .setTitle(`${players.map(p => p.val_name).join(', ')} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} as a Team!`)
+        .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
         .setImage(meme.URL);
 
     players.forEach(player => {
@@ -122,7 +123,7 @@ async function SameTeamGameUpdate(players, allPlayerStats, isWinning) {
     return embed;
 }
 
-async function DifferentTeamsGameUpdate(winningPlayers, losingPlayers, allPlayerStats) {
+async function DifferentTeamsGameUpdate(winningPlayers, losingPlayers, allPlayerStats, isDraw) {
     const winningMeme = await GetRandomMeme(true);
     const losingMeme = await GetRandomMeme(false);
 
@@ -152,15 +153,20 @@ async function DifferentTeamsGameUpdate(winningPlayers, losingPlayers, allPlayer
     }
 
     const embed = new EmbedBuilder()
-        .setColor('#28a745')
-        .setTitle(`${winningPlayers.map(p => p.val_name).join(', ')} beat ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!`)
-        .addField('Winning team meme', '\u200b')
-        .setImage(winningMeme.URL);
+        //.setColor('#28a745')
+        .setTitle(`${players.map(p => p.val_name).join(', ')} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} as a Team!`)
+        .setColor(isDraw ? '#ffe659' : '#28a745')
+        .setTitle(isDraw ? `${winningPlayers.map(p => p.val_name).join(', ')} drew ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!` 
+                         : `${winningPlayers.map(p => p.val_name).join(', ')} beat ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!`)
+        
+        //.addField('Winning team meme', '\u200b')
+        .setImage(isDraw ? losingMeme.URL : winningMeme.URL);
 
     addPlayerStats(embed, winningPlayers, 'Winner');
 
-    embed.addField('Losing team meme', '\u200b')
-         .setImage(losingMeme.URL);
+    
+    embed.setImage(losingMeme.URL);
+    //.addField('Losing team meme', '\u200b')
 
     addPlayerStats(embed, losingPlayers, 'Loser');
 

@@ -12,6 +12,12 @@ async function FetchRankData(region, puuid) {
     return response.data;
 }
 
+// Fetch whole match data
+async function FetchMatchData(matchID) {
+    const response = await axios.get(`https://api.henrikdev.xyz/valorant/v2/match/${matchID}`);
+    return response.data;
+}
+
 // Fetch last game info from the API
 async function GetLastGameInfo(puuid) {
     const url = `https://api.henrikdev.xyz/valorant/v1/by-puuid/lifetime/matches/eu/${puuid}?mode=competitive&page=1&size=1`;
@@ -42,6 +48,7 @@ async function GetLastGameInfo(puuid) {
 module.exports = {
     FetchAccountData,
     FetchRankData,
-    GetLastGameInfo
+    GetLastGameInfo,
+    FetchMatchData,
 };
 
