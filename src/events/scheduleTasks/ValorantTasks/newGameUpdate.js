@@ -20,17 +20,17 @@ module.exports = async (client) => {
                 const group = matchGroups[matchID];
                 const lastGame = group.lastGame;
                 const teamResults = {};
-                const isDraw = false;
+                let isDraw = false;
 
                 const matchData = await FetchMatchData(matchID);
-                const isWinning =  false;
+                let isWinning = false;
 
                 for (const player of group.players) {
                     if (player.val_lastGameID !== matchID) {
                         newMatchFound = true;
                     
                         const playerTeam = lastGame.stats.team;
-                        teamResults[playerTeam] = teamResults[playerTeam] || { players: [], score: lastGame.allTeams[playerTeam.toLowerCase()] };
+                        teamResults[playerTeam] = teamResults[playerTeam] || { players: [], score: lastGame.teams[playerTeam.toLowerCase()] };
                         teamResults[playerTeam].players.push(player);
                     
                         await ValorantPlayer.findByIdAndUpdate(player._id, { val_lastGameID: matchID });
@@ -44,16 +44,13 @@ module.exports = async (client) => {
                 if (allTeams.length === 1) {
 
                     // Check if it's a Draw
-                    if (matchData.data.allTeams.red.has_won === false && matchData.data.allTeams.blue.has_won === false) {
+                    if (matchData.data.teams.red.has_won === false && matchData.data.teams.blue.has_won === false) {
                         isWinning = false;
-                        isDraw  = true;
-                        
+                        isDraw  = true;                        
                     }else{
-                        matchData.data.teams.allTeams[0].toLowerCase().has_won === true ? isWinning = true : isWinning = false;
+                        isWinning = matchData.data.teams[allTeams[0].toLowerCase()].has_won === true ? true : false;
                     }
                     
-
-
                     // Check if there is one player or more in the team
                     if (teamResults[allTeams[0]].players.length === 1) {
                         const player = teamResults[allTeams[0]].players[0];
