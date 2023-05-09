@@ -74,15 +74,24 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
     const embed = new EmbedBuilder()
         .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
         .setTitle(`${player.val_name} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} their last game!`)
+        /*.setDescription(
+            `**'Agent'**      **'HS %'** 
+            ${playerStats.stats.character.name}     ${headshotPercentage} %
+
+            **'(K/D/A)'**      **'Combat Score'**
+            ${kda}       ${combatScore}`
+        )*/
+        
         .addFields(
-            { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
-            { name: '\u200b', value: '\u200b', inline: false},
-            { name: '(K/D/A)', value: `${kda}`,inline: true },
-            { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
-            { name: 'Combat Score', value: `${combatScore}`, inline: true }
+            { name: '**Agent**', value: `${playerStats.stats.character.name}`, inline: true },
+            { name: ' ', value: ' ', inline: true },
+            { name: '**HS %**', value: `${headshotPercentage} %`, inline: true },
+            { name: '**(K/D/A)**', value: `${kda}`,inline: true },
+            { name: ' ', value: ' ', inline: true },
+            { name: '**Combat Score**', value: `${combatScore}`, inline: true }
         )
         .setImage(meme.URL)
-        .setTimestamp();
+        //.setTimestamp();
 
     return embed;
 }
