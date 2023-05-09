@@ -4,7 +4,7 @@ const { callback: UpdateLeaderboard } = require('../../../commands/valorant/vall
 
 module.exports = async (client) => {
     // Schedule a job to run every Hour
-    cron.schedule('* * * * *', () => {
+    cron.schedule('0 * * * *', () => {
         console.log('Updating leaderboard...');    
 
         UpdateLeaderboard(client).catch((error) => {
