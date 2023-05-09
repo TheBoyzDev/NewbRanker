@@ -84,10 +84,37 @@ function GetRankEmojiName(playerRank) {
     return rankMapping[playerRank] || '';
 }
 
+// Get agent image from agent name
+function GetAgentImage(agentName) {
+    const agentMapping = {
+        'Breach': 'https://static.wikia.nocookie.net/valorant/images/5/53/Breach_icon.png',
+        'Brimstone': 'https://static.wikia.nocookie.net/valorant/images/4/4d/Brimstone_icon.png',
+        'Cypher': 'https://static.wikia.nocookie.net/valorant/images/8/88/Cypher_icon.png',
+        'Jett': 'https://static.wikia.nocookie.net/valorant/images/3/35/Jett_icon.png',
+        'Killjoy': 'https://static.wikia.nocookie.net/valorant/images/1/15/Killjoy_icon.png',
+        'Omen': 'https://static.wikia.nocookie.net/valorant/images/b/b0/Omen_icon.png',
+        'Phoenix': 'https://static.wikia.nocookie.net/valorant/images/1/14/Phoenix_icon.png',
+        'Raze': 'https://static.wikia.nocookie.net/valorant/images/9/9c/Raze_icon.png',
+        'Reyna': 'https://static.wikia.nocookie.net/valorant/images/b/b0/Reyna_icon.png',
+        'Sage': 'https://static.wikia.nocookie.net/valorant/images/7/74/Sage_icon.png',
+        'Sova': 'https://static.wikia.nocookie.net/valorant/images/4/49/Sova_icon.png',
+        'Viper': 'https://static.wikia.nocookie.net/valorant/images/5/5f/Viper_icon.png',
+        'Yoru': 'https://static.wikia.nocookie.net/valorant/images/d/d4/Yoru_icon.png',
+        'Astra': 'https://static.wikia.nocookie.net/valorant/images/0/08/Astra_icon.png',
+        'Skye': 'https://static.wikia.nocookie.net/valorant/images/3/33/Skye_icon.png',
+        'Kay/o': 'https://static.wikia.nocookie.net/valorant/images/f/f0/KAYO_icon.png',
+        'Chamber': 'https://static.wikia.nocookie.net/valorant/images/0/09/Chamber_icon.png',
+        'Harbor': 'https://static.wikia.nocookie.net/valorant/images/f/f3/Harbor_icon.png',
+        'Gekko': 'https://static.wikia.nocookie.net/valorant/images/6/66/Gekko_icon.png',
+        'Neon': 'https://static.wikia.nocookie.net/valorant/images/d/d0/Neon_icon.png',
+        'Fade': 'https://static.wikia.nocookie.net/valorant/images/a/a6/Fade_icon.png',
+    };
+}
 
 module.exports = {
     ParsePlayerNameAndTag,
     GroupPlayersByMatch,
     GetRandomMeme,
-    GetRankEmojiName
+    GetRankEmojiName,
+    GetAgentImage,
 };

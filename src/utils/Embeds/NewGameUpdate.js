@@ -1,6 +1,6 @@
 const { EmbedBuilder } = require('discord.js');
 
-const { GetRandomMeme } = require('../ValorantHelpers/helpers');
+const { GetRandomMeme, GetAgentImage } = require('../ValorantHelpers/helpers');
 
 const ValorantPlayer = require('../../models/ValorantPlayer');
 
@@ -70,13 +70,15 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
     // Calculate Headshot Percentage
     const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
 
+    const agentImage = GetAgentImage(playerStats.stats.character.name);
+
     // Use playerStats.stats to access the player's statistics
     const embed = new EmbedBuilder()
         .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
         .setTitle(`${player.val_name} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} their last game!`)
+        .setThumbnail(agentImage)
         .addFields(
             { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
-            { name: '\u200b', value: '\u200b', inline: false},
             { name: '(K/D/A)', value: `${kda}`,inline: true },
             { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
             { name: 'Combat Score', value: `${combatScore}`, inline: true }
@@ -90,12 +92,11 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
 async function SameTeamGameUpdate(players, allPlayerStats, isWinning, isDraw) {
     const meme = await GetRandomMeme(isWinning);
 
-    const embed = new EmbedBuilder()
+    const titleEmbed = new EmbedBuilder()
         .setTitle(`${players.map(p => p.val_name).join(', ')} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} as a Team!`)
-        .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
-        .setImage(meme.URL);
+        .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545');
 
-    players.forEach(player => {
+    const playerEmbeds = players.map(player => {
         const playerStats = allPlayerStats.find(stats => stats.playerName.trim() === player.val_name.trim());
 
         // Calculate KDA
@@ -108,72 +109,89 @@ async function SameTeamGameUpdate(players, allPlayerStats, isWinning, isDraw) {
         // Calculate Headshot Percentage
         const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
 
-        embed.addFields(
-            { name: `**${player.val_name}**`, value: ' ', inline: false },
-            { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
-            { name: '\u200b', value: '\u200b', inline: false},
-            { name: '(K/D/A)', value: `${kda}`,inline: true },
-            { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
-            { name: 'Combat Score', value: `${combatScore}`, inline: true }
-        );
+        const embed = new EmbedBuilder()
+            .setTitle(`**${player.val_name}**`)
+            .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
+            .setThumbnail(GetAgentImage(playerStats.stats.character.name))
+            .addFields(
+                { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
+                { name: '(K/D/A)', value: `${kda}`,inline: true },
+                { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
+                { name: 'Combat Score', value: `${combatScore}`, inline: true }
+            )
+            .setTimestamp();
+        
+        return embed;
     });
 
-    embed.setTimestamp();
+    const memeEmbed = new EmbedBuilder()
+        .setImage(meme.URL)
+        .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545');
 
-    return embed;
+    return [titleEmbed, playerEmbeds, memeEmbed];
 }
+
 
 async function DifferentTeamsGameUpdate(winningPlayers, losingPlayers, allPlayerStats, isDraw) {
     const winningMeme = await GetRandomMeme(true);
     const losingMeme = await GetRandomMeme(false);
 
-    function addPlayerStats(embed, players, prefix) {
-        players.forEach(player => {
-            const playerStats = allPlayerStats.find(stats => stats.playerName.trim() === player.val_name.trim());
+    function createPlayerEmbed(player, prefix) {
+        const playerStats = allPlayerStats.find(stats => stats.playerName.trim() === player.val_name.trim());
 
-            // Calculate KDA
-            const kda = `${playerStats.stats.kills}/${playerStats.stats.deaths}/${playerStats.stats.assists}`;
-            const combatScore = `${playerStats.stats.score}`;
-            // Shots
-            const bodyShots = playerStats.stats.shots.body;
-            const headShots = playerStats.stats.shots.head;
-            const legShots = playerStats.stats.shots.leg;
-            // Calculate Headshot Percentage
-            const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
+        // Calculate KDA
+        const kda = `${playerStats.stats.kills}/${playerStats.stats.deaths}/${playerStats.stats.assists}`;
+        const combatScore = `${playerStats.stats.score}`;
+        // Shots
+        const bodyShots = playerStats.stats.shots.body;
+        const headShots = playerStats.stats.shots.head;
+        const legShots = playerStats.stats.shots.leg;
+        // Calculate Headshot Percentage
+        const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
 
-            embed.addFields(
-                { name: `**${prefix} ${player.val_name}**`, value: '\u200b', inline: false },
+        const embed = new EmbedBuilder()
+            .setColor(prefix === 'Draw' ? '#ffe659' : prefix === 'Winner' ? '#dc3545' : '#28a745')
+            .setTitle(`**${prefix} ${player.val_name}**`)
+            .setThumbnail(GetAgentImageName(playerStats.stats.character.name))
+            .addFields(
                 { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
-                { name: '\u200b', value: '\u200b', inline: false},
-                { name: '(K/D/A)', value: `${kda}`,inline: true },
+                { name: '(K/D/A)', value: `${kda}`, inline: true },
                 { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
                 { name: 'Combat Score', value: `${combatScore}`, inline: true }
-            );
-        });
+            )
+            .setTimestamp();
+
+        return embed;
     }
 
-    const embed = new EmbedBuilder()
-        //.setColor('#28a745')
-        .setTitle(`${players.map(p => p.val_name).join(', ')} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} as a Team!`)
-        .setColor(isDraw ? '#ffe659' : '#28a745')
-        .setTitle(isDraw ? `${winningPlayers.map(p => p.val_name).join(', ')} drew ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!` 
-                         : `${winningPlayers.map(p => p.val_name).join(', ')} beat ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!`)
-        
-        //.addField('Winning team meme', '\u200b')
-        .setImage(isDraw ? losingMeme.URL : winningMeme.URL);
+    const titleEmbed = new EmbedBuilder()
+        .setColor(isDraw ? '#ffe659' : '#547feb')
+        .setTitle(isDraw ? `${winningPlayers.map(p => p.val_name).join(', ')} drew against ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!`
+                         : `${winningPlayers.map(p => p.val_name).join(', ')} beat the shit out of ${losingPlayers.map(p => p.val_name).join(', ')} in their last game!`)
+        .setImage(isDraw ? losingMeme.URL : winningMeme.URL)
+        .setTimestamp(); 
 
-    addPlayerStats(embed, winningPlayers, 'Winner');
+        const playerEmbeds = [];
+        for (const player of winningPlayers.concat(losingPlayers)) {
+            let prefix = '';
+            if (isDraw) {
+                prefix = 'Draw';
+            } else {
+                prefix = winningPlayers.some(winner => winner.val_name.trim() === player.val_name.trim()) ? 'Winner' : 'Loser';
+            }
+            playerEmbeds.push(createPlayerEmbed(player, prefix));
+        }
 
-    
-    embed.setImage(losingMeme.URL);
-    //.addField('Losing team meme', '\u200b')
-
-    addPlayerStats(embed, losingPlayers, 'Loser');
-
-    embed.setTimestamp();
-
-    return embed;
+    return [titleEmbed, playerEmbeds];
 }
+
+module.exports = {
+    OneVsOneGameUpdate,
+    SinglePlayerGameUpdate,
+    SameTeamGameUpdate,
+    DifferentTeamsGameUpdate,
+};
+
 
 
 module.exports = {

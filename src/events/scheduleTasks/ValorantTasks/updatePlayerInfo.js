@@ -3,7 +3,7 @@ const ValorantPlayer = require('../../../models/ValorantPlayer');
 const { FetchAccountData, FetchRankData } = require('../../../utils/api');
 
 module.exports = async () => {
-    cron.schedule('*/20 * * * *', async () => {
+    cron.schedule('* * * * *', async () => {
         try{
             const players = await ValorantPlayer.find();
     
