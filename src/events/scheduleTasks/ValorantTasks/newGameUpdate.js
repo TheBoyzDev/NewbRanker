@@ -66,7 +66,10 @@ module.exports = async (client) => {
 
                         // Send the embed message if there's a new match
                         if (newMatchFound && gameUpdateEmbed) {
-                            await channel.send({ embeds: [gameUpdateEmbed] });
+                            for(const embed of gameUpdateEmbed)
+                            {
+                                await channel.send({ embeds: [embed] });
+                            }
                         }
                     }
                 } else if (allTeams.length === 2) {

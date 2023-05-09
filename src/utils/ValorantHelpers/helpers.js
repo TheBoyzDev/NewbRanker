@@ -102,7 +102,7 @@ function GetAgentImage(agentName) {
         'Yoru': 'https://static.wikia.nocookie.net/valorant/images/d/d4/Yoru_icon.png',
         'Astra': 'https://static.wikia.nocookie.net/valorant/images/0/08/Astra_icon.png',
         'Skye': 'https://static.wikia.nocookie.net/valorant/images/3/33/Skye_icon.png',
-        'Kay/o': 'https://static.wikia.nocookie.net/valorant/images/f/f0/KAYO_icon.png',
+        'KAY/O': 'https://static.wikia.nocookie.net/valorant/images/f/f0/KAYO_icon.png',
         'Chamber': 'https://static.wikia.nocookie.net/valorant/images/0/09/Chamber_icon.png',
         'Harbor': 'https://static.wikia.nocookie.net/valorant/images/f/f3/Harbor_icon.png',
         'Gekko': 'https://static.wikia.nocookie.net/valorant/images/6/66/Gekko_icon.png',
