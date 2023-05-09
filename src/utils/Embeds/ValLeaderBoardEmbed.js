@@ -21,8 +21,8 @@ async function AllPlayersLeaderBoardEmbed(guild){
             const rankEmoji = guild.emojis.cache.find(emoji => emoji.name === rankEmojiName);
             const link = `https://tracker.gg/valorant/profile/riot/${[player.val_name.replace(/\s+/g, '')]}%23${player.val_tag}/overview`;
 
-            playersArray.push(`\n'``#${index + 1}``' [${player.discordName.split('#')[0]}](${link}) 
-            ELO: ${player.val_elo} | Rank: ${player.val_playerRank} ${rankEmoji}\n`);
+            playersArray.push(`\n\`\`#${index + 1}\`\` [${player.discordName.split('#')[0]}](${link}) 
+                                ELO: ${player.val_elo} | Rank: ${player.val_playerRank} ${rankEmoji}\n`);
             });
 
             // Add the player's info with the rank emoji to the embed in a single line
