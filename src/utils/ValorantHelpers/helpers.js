@@ -109,6 +109,8 @@ function GetAgentImage(agentName) {
         'Neon': 'https://static.wikia.nocookie.net/valorant/images/d/d0/Neon_icon.png',
         'Fade': 'https://static.wikia.nocookie.net/valorant/images/a/a6/Fade_icon.png',
     };
+    
+    return agentMapping[agentName] || '';
 }
 
 module.exports = {

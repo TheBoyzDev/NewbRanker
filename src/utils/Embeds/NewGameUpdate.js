@@ -60,6 +60,8 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
         throw new Error(`Player ${player.val_name} not found in the given player stats.`);
     }
 
+    // Agent Name
+    const agentName = playerStats.stats.character.name;
     // Calculate KDA
     const kda = `${playerStats.stats.kills}/${playerStats.stats.deaths}/${playerStats.stats.assists}`;
     const combatScore = `${playerStats.stats.score}`;
@@ -70,20 +72,18 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
     // Calculate Headshot Percentage
     const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
 
-    const agentImage = GetAgentImage(playerStats.stats.character.name);
-
     // Use playerStats.stats to access the player's statistics
     const embed = new EmbedBuilder()
         .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
         .setTitle(`${player.val_name} ${isDraw ? 'just DREW' : isWinning ? 'just WON' : 'just LOST'} their last game!`)
-        .setThumbnail(agentImage)
+        .setThumbnail(GetAgentImage(agentName))
         .addFields(
             { name: '**Agent**', value: `${playerStats.stats.character.name}`, inline: true },
-            { name: ' ', value: ' ', inline: true },
             { name: '**HS %**', value: `${headshotPercentage} %`, inline: true },
-            { name: '**(K/D/A)**', value: `${kda}`,inline: true },
             { name: ' ', value: ' ', inline: true },
-            { name: '**Combat Score**', value: `${combatScore}`, inline: true }
+            { name: '**(K/D/A)**', value: `${kda}`,inline: true },
+            { name: '**Combat Score**', value: `${combatScore}`, inline: true },
+            { name: ' ', value: ' ', inline: true },
         )
         .setImage(meme.URL)
         //.setTimestamp();
