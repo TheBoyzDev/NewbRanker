@@ -22,13 +22,23 @@ async function OneVsOneGameUpdate(winningPlayer, losingPlayer, allPlayerStats, i
         const headshotPercentage = ((headShots / (bodyShots + headShots + legShots)) * 100).toFixed(2);
 
         embed.addFields(
+            { name: `**${prefix} ${player.val_name}**`, value: ' ', inline: false },
+            { name: '**Agent**', value: `${playerStats.stats.character.name}`, inline: true },
+            { name: ' ', value: ' ', inline: true },
+            { name: '**HS %**', value: `${headshotPercentage} %`, inline: true },
+            { name: '**(K/D/A)**', value: `${kda}`,inline: true },
+            { name: ' ', value: ' ', inline: true },
+            { name: '**Combat Score**', value: `${combatScore}`, inline: true }
+        )
+
+        /*embed.addFields(
             { name: `**${prefix} ${player.val_name}**`, value: '\u200b', inline: false },
             { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
             { name: '\u200b', value: '\u200b', inline: false},
             { name: '(K/D/A)', value: `${kda}`,inline: true },
             { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
             { name: 'Combat Score', value: `${combatScore}`, inline: true }
-        );
+        );*/
     }
 
     const embed = new EmbedBuilder()
@@ -86,7 +96,6 @@ async function SinglePlayerGameUpdate(player, allPlayerStats, isWinning, isDraw)
             { name: '**Combat Score**', value: `${combatScore}`, inline: true }
         )
         .setImage(meme.URL)
-        //.setTimestamp();
 
     return embed;
 }
@@ -116,12 +125,19 @@ async function SameTeamGameUpdate(players, allPlayerStats, isWinning, isDraw) {
             .setColor(isDraw ? '#ffe659' : isWinning ? '#28a745' : '#dc3545')
             .setThumbnail(GetAgentImage(playerStats.stats.character.name))
             .addFields(
+                { name: '**Agent**', value: `${playerStats.stats.character.name}`, inline: true },
+                { name: ' ', value: ' ', inline: true },
+                { name: '**HS %**', value: `${headshotPercentage} %`, inline: true },
+                { name: '**(K/D/A)**', value: `${kda}`,inline: true },
+                { name: ' ', value: ' ', inline: true },
+                { name: '**Combat Score**', value: `${combatScore}`, inline: true }
+            )
+            /*.addFields(
                 { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
                 { name: '(K/D/A)', value: `${kda}`,inline: true },
                 { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
                 { name: 'Combat Score', value: `${combatScore}`, inline: true }
-            )
-            .setTimestamp();
+            )*/
         
         return embed;
     });
@@ -156,12 +172,19 @@ async function DifferentTeamsGameUpdate(winningPlayers, losingPlayers, allPlayer
             .setTitle(`**${prefix} ${player.val_name}**`)
             .setThumbnail(GetAgentImageName(playerStats.stats.character.name))
             .addFields(
+                { name: '**Agent**', value: `${playerStats.stats.character.name}`, inline: true },
+                { name: ' ', value: ' ', inline: true },
+                { name: '**HS %**', value: `${headshotPercentage} %`, inline: true },
+                { name: '**(K/D/A)**', value: `${kda}`,inline: true },
+                { name: ' ', value: ' ', inline: true },
+                { name: '**Combat Score**', value: `${combatScore}`, inline: true }
+            )
+            /*.addFields(
                 { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
                 { name: '(K/D/A)', value: `${kda}`, inline: true },
                 { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
                 { name: 'Combat Score', value: `${combatScore}`, inline: true }
-            )
-            .setTimestamp();
+            )*/
 
         return embed;
     }
