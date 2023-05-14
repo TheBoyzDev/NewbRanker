@@ -1,14 +1,13 @@
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
+const expressServer = require('./expressServer');
 
 //Connections
 const connectDB = require('./db'); // Import connectDB
 
 // Connect to MongoDB
 connectDB();
-
-const leaderboardUpdateSchedule = '0 */4 * * *'; // Run every 4 hours at 0 minutes
 
 // Create a new Discord client
 const client = new Client({ 
@@ -19,10 +18,6 @@ const client = new Client({
         IntentsBitField.Flags.MessageContent,
     ],
  });
-
-
-
-
 
 client.on('ready', async () => {
     
