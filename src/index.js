@@ -1,7 +1,6 @@
 require('dotenv').config();
 const { Client, IntentsBitField } = require('discord.js');
 const eventHandler = require('./handlers/eventHandler');
-const expressServer = require('./expressServer');
 
 //Connections
 const connectDB = require('./db'); // Import connectDB
