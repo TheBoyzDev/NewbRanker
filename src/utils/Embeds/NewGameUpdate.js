@@ -132,13 +132,6 @@ async function SameTeamGameUpdate(players, allPlayerStats, isWinning, isDraw) {
                 { name: ' ', value: ' ', inline: true },
                 { name: '**Combat Score**', value: `${combatScore}`, inline: true }
             )
-            /*.addFields(
-                { name: 'Agent', value: `${playerStats.stats.character.name}`, inline: true },
-                { name: '(K/D/A)', value: `${kda}`,inline: true },
-                { name: 'Headshot Percentage', value: `${headshotPercentage}%`, inline: true },
-                { name: 'Combat Score', value: `${combatScore}`, inline: true }
-            )*/
-        
         return embed;
     });
 

@@ -62,14 +62,16 @@ module.exports = async (client) => {
                             await channel.send({ embeds: [gameUpdateEmbed] });
                         }
                     } else {
-                        const gameUpdateEmbed = await SameTeamGameUpdate(teamResults[allTeams[0]].players, playerStatsArray, isWinning, isDraw);
+                        const [titleEmbed, playerEmbeds, memeEmbed] = await SameTeamGameUpdate(teamResults[allTeams[0]].players, playerStatsArray, isWinning, isDraw);
 
                         // Send the embed message if there's a new match
-                        if (newMatchFound && gameUpdateEmbed) {
-                            for(const embed of gameUpdateEmbed)
+                        if (newMatchFound && playerEmbeds) {
+                            await channel.send({ embeds: [titleEmbed] });
+                            for(const embed of playerEmbeds)
                             {
                                 await channel.send({ embeds: [embed] });
                             }
+                            await channel.send({ embeds: [memeEmbed] });
                         }
                     }
                 } else if (allTeams.length === 2) {
